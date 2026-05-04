@@ -9,9 +9,11 @@ const users = []
 
 app.post('/', (req, res) =>{
     users.push(req.body)
+    prisma.user.create
     console.log(users)
     res.send("Deu certo")
 })
+
 
 
 app.get('/', (req, res) => {
