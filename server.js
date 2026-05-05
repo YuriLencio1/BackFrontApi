@@ -51,28 +51,14 @@ app.get('/', async (req, res) => {
   let users = []
   console.log("QUERY RECEBIDA:", req.query);
 
-<<<<<<< HEAD
-  if (req.query) {
-    users = await prisma.user.findMany({
-=======
-  let users = []
-
   if (req.query) {
     users = await  prisma.user.findMany({
->>>>>>> fb666389437e04a0dca562c769448ca479505a9f
       where: {
         name: req.query.name,
         email: req.query.email,
         age: req.query.age
       }
     })
-<<<<<<< HEAD
-  } else {
-    users = await prisma.user.findMany()
-  }
-    res.json(users)
-})
-=======
   
   }else{
      users = await prisma.user.findMany();
@@ -80,6 +66,5 @@ app.get('/', async (req, res) => {
 
    res.json(users);
 });
->>>>>>> fb666389437e04a0dca562c769448ca479505a9f
 
 app.listen(8000);
