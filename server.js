@@ -1,12 +1,15 @@
 import express from "express";
 import { PrismaClient } from "@prisma/client";
+import cors from "cors";
 
 const app = express();
 const prisma = new PrismaClient();
+
+app.use(cors());
 app.use(express.json());
 
-app.post("/", async (req, res) => {
-  await prisma.user.create({
+app.post("/usuarios", async (req, res) => {
+  const user = await prisma.user.create({
     data: {
       email: req.body.email,
       name: req.body.name,
@@ -20,21 +23,25 @@ app.post("/", async (req, res) => {
   });
 });
 
-  app.put("/:id", async (req, res) => {
-  await prisma.user.update({
+app.put("/usuarios/:id", async (req, res) => {
+  const user = await prisma.user.update({
     where: {
-        id: req.params.id,
+      id: req.params.id,
     },
     data: {
       email: req.body.email,
       name: req.body.name,
-      age: req.body.age
+      age: req.body.age,
     },
-      });
+  });
+
+  res.json({
+    message: "Usuário atualizado com sucesso",
+    user,
+  });
 });
 
-
- app.delete("/:id", async (req, res) => {
+app.delete("/usuarios/:id", async (req, res) => {
   const user = await prisma.user.delete({
     where: {
       id: req.params.id,
@@ -47,24 +54,20 @@ app.post("/", async (req, res) => {
   });
 });
 
-app.get('/', async (req, res) => {
-  let users = []
-  console.log("QUERY RECEBIDA:", req.query);
+app.get("/usuarios", async (req, res) => {
+  const { name, email, age } = req.query;
 
-  if (req.query) {
-    users = await  prisma.user.findMany({
-      where: {
-        name: req.query.name,
-        email: req.query.email,
-        age: req.query.age
-      }
-    })
-  
-  }else{
-     users = await prisma.user.findMany();
-  }
+  const users = await prisma.user.findMany({
+    where: {
+      name: name || undefined,
+      email: email || undefined,
+      age: age ? Number(age) : undefined,
+    },
+  });
 
-   res.json(users);
+  res.json(users);
 });
 
-app.listen(8000);
+app.listen(8000, () => {
+  console.log("Servidor rodando na porta 8000");
+});
