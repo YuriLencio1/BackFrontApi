@@ -47,11 +47,22 @@ app.post("/", async (req, res) => {
   });
 });
 
-app.get("/", async (req, res) => {
+app.get('/', async (req, res) => {
+  let users = []
+  console.log("QUERY RECEBIDA:", req.query);
 
-   const users = await prisma.user.findMany();
-
-   res.json(users);
-});
+  if (req.query) {
+    users = await prisma.user.findMany({
+      where: {
+        name: req.query.name,
+        email: req.query.email,
+        age: req.query.age
+      }
+    })
+  } else {
+    users = await prisma.user.findMany()
+  }
+    res.json(users)
+})
 
 app.listen(8000);
