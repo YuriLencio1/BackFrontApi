@@ -13,7 +13,7 @@ app.post("/usuarios", async (req, res) => {
     data: {
       email: req.body.email,
       name: req.body.name,
-      age: req.body.age,
+      age: Number (req.body.age),
     },
   });
 

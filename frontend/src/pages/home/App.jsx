@@ -1,16 +1,39 @@
-import { useEffect  } from "react";
+import { useEffect, useState, useRef  } from "react";
 import "./App.css";
 import Lixeira from "../../assets/lixeira.png";
 import api from "../../servers/api";
 
 function App() {
-let users = []
+const [users, setUsers] = useState([])
+
+const inputName= useRef()
+const inputAge = useRef()
+const inputEmail=useRef()
 
 async function getUsers(params) {
-  users = await api.get('/usuarios')  
-}
-  
+  const usersFromApi = await api.get('/usuarios')  
 
+  setUsers(usersFromApi.data)
+}
+  async function createUsers() {
+
+    await api.post('/usuarios', {
+      name: inputName.current.value,
+      email: inputEmail.current.value,
+      age: inputAge.current.value
+
+      
+    })
+    getUsers();
+  }
+
+
+    async function deleteUsers(id) {
+
+    await api.delete(`/usuarios/${id}`)
+    
+    getUsers();
+  }
   useEffect(() => {
     getUsers();
   }, []);
@@ -20,10 +43,10 @@ async function getUsers(params) {
       <div className="container">
         <form>
           <h1>Cadastro de usuario</h1>
-          <input name="nome" type="text" placeholder="Nome" />
-          <input name="email" type="text" placeholder="Email" />
-          <input name="idade" type="number" placeholder="Idade" />
-          <button type="button">cadastrar</button>
+          <input name="nome" type="text" placeholder="Nome" ref={inputName} />
+          <input name="email" type="text" placeholder="Email" ref={inputEmail}/>
+          <input name="idade" type="number" placeholder="Idade" ref={inputAge} />
+          <button type="button" onClick={createUsers}>cadastrar</button>
         </form>
 
         {users.map((user) => (
@@ -34,7 +57,7 @@ async function getUsers(params) {
               <p>Idade: {user.age}</p>
             </div>
 
-            <button type="button">
+            <button type="button" onClick={() => deleteUsers(user.id)}>
               <img className="icone-lixeira" src={Lixeira} alt="Excluir" />
             </button>
           </div>
@@ -43,5 +66,4 @@ async function getUsers(params) {
     </>
   );
 }
-
 export default App;
